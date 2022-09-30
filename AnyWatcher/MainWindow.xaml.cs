@@ -2,6 +2,7 @@
 using AnyWatcher.Services;
 using AnyWatcher.Services.Contracts;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -105,6 +106,20 @@ namespace AnyWatcher
                     onesuccess |= res.Success;
                     if (!res.Success)
                         return false;
+                    if (watcher.State == WatcherState.Done)
+                    {
+                        try
+                        {
+
+                            new ToastContentBuilder()
+                            .AddText($"发现更新：{watcher.Name}")
+                            .Show();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
+                    }
                 }
             }
             return onesuccess;
@@ -119,7 +134,7 @@ namespace AnyWatcher
                 return;
             }
             foreach (var watcher in watchers)
-                if (watcher.State == Models.WatcherState.Error)
+                //if (watcher.State == Models.WatcherState.Error)
                     watcher.State = Models.WatcherState.Wait;
             State = TaskState.Started;
             initbgw();
